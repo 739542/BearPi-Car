@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.venv/
+*.log
+firmware/wifi_local.h
+firmware/web_assets.h
+*.bin
+node_modules/

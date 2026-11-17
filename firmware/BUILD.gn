@@ -1,0 +1,11 @@
+static_library("car_motor_test") {
+  sources = [ "motor_test.c", "wireless.c" ]
+  include_dirs = [
+    "//foundation/communication/interfaces/kits/wifi_lite/wifiservice",
+    "//vendor/hisi/hi3861/hi3861/third_party/lwip_sack/include",
+    "//utils/native/lite/include",
+    "//kernel/liteos_m/components/cmsis/2.0",
+    "//base/iot_hardware/interfaces/kits/wifiiot_lite",
+    "//vendor/hisi/hi3861/hi3861/include",
+  ]
+}
