@@ -69,7 +69,7 @@ def main():
             if result != 0 or not artifact.is_file() or artifact.stat().st_size == 0:
                 raise SystemExit('BUILD FAILED. No new firmware exported. See ' + str(output / 'build.log'))
             shutil.copy2(str(artifact), str(exported))
-            manifest.write_text(json.dumps({'program': 'car-stage1-v11',
+            manifest.write_text(json.dumps({'program': 'car-stage1-v12',
                 'sha256': hashlib.sha256(exported.read_bytes()).hexdigest(),
                 'source_sha256': hashlib.sha256((target / 'motor_test.c').read_bytes()).hexdigest(),
                 'hardware_test': 'NOT_RUN'}, indent=2), encoding='utf-8')

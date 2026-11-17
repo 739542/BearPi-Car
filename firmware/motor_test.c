@@ -57,11 +57,18 @@ static unsigned int StartWheels(char cmd, int l, int r)
     error |= GpioSetOutputVal(WIFI_IOT_GPIO_IDX_10, left);
     error |= GpioSetOutputVal(WIFI_IOT_GPIO_IDX_12, right);
     if (error != 0) return error;
-    if (l != 0) {
+    /* Stop() sets both enable pins to GPIO outputs low before a change.
+     * Hold an enable high for full duty, without a PWM counter edge. */
+    if (l == 100) {
+        error = GpioSetOutputVal(WIFI_IOT_GPIO_IDX_7, WIFI_IOT_GPIO_VALUE1);
+    } else if (l != 0) {
         error |= IoSetFunc(WIFI_IOT_IO_NAME_GPIO_7, WIFI_IOT_IO_FUNC_GPIO_7_PWM0_OUT);
         if (error == 0) error |= PwmStart(WIFI_IOT_PWM_PORT_PWM0, l * 400, 40000);
     }
-    if (r != 0 && error == 0) {
+    if (error != 0) return error;
+    if (r == 100) {
+        error = GpioSetOutputVal(WIFI_IOT_GPIO_IDX_8, WIFI_IOT_GPIO_VALUE1);
+    } else if (r != 0) {
         error |= IoSetFunc(WIFI_IOT_IO_NAME_GPIO_8, WIFI_IOT_IO_FUNC_GPIO_8_PWM1_OUT);
         if (error == 0) error |= PwmStart(WIFI_IOT_PWM_PORT_PWM1, r * 400, 40000);
     }
@@ -81,11 +88,12 @@ int CarSetWheels(int l, int r, int fast)
     osMutexAcquire(g_lock, osWaitForever);
     if (!g_ready || g_busy || g_request) { osMutexRelease(g_lock); return 1; }
     /* Keep the lower half of the joystick unchanged. Above that, increase
-     * the outer wheel up to 60% and preserve the requested turning ratio. */
+     * the outer wheel up to the selected ceiling and preserve the requested turning ratio. */
     int al = l < 0 ? -l : l;
     int ar = r < 0 ? -r : r;
     int peak = al > ar ? al : ar;
-    int target = peak > 15 ? 15 + (fast ? 5 : 3) * (peak - 15) : peak;
+    int ceiling = fast ? 100 : 60;
+    int target = peak > 15 ? 15 + (ceiling - 15) * (peak - 15) / 15 : peak;
     joy_l = peak ? l * target / peak : 0;
     joy_r = peak ? r * target / peak : 0;
     g_drive = (l || r) ? 'j' : 0;
@@ -154,7 +162,7 @@ static hi_u32 CarInfo(hi_s32 argc, const hi_char **argv)
 {
     (void)argc;
     (void)argv;
-    hi_at_printf("[CAR] VERSION car-stage1-v11\r\nOK\r\n");
+    hi_at_printf("[CAR] VERSION car-stage1-v12\r\nOK\r\n");
     return 0;
 }
 
@@ -182,9 +190,9 @@ static void MotorTask(void *arg)
     osMutexAcquire(g_lock, osWaitForever);
     g_ready = 1;
     osMutexRelease(g_lock);
-    printf("\r\n[CAR] READY - STOPPED - car-stage1-v11\r\n");
+    printf("\r\n[CAR] READY - STOPPED - car-stage1-v12\r\n");
     printf("[CAR] AT+CAR=n: 1=left 2=right 3=back 4=forward 5=left turn 6=right turn 0=stop\r\n");
-    printf("[CAR] Normal 60%% / Sport 90%% PWM; pulse tests 30%%; each test 500ms; wheels OFF ground; no auto-send\r\n");
+    printf("[CAR] Normal 60%% / Sport 100%% PWM; pulse tests 30%%; each test 500ms; wheels OFF ground; no auto-send\r\n");
     int active_l = 0, active_r = 0;
     char active = 0;
     char last_motion = 0;

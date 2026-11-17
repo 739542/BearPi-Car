@@ -188,8 +188,8 @@ class Controller(Features):
                 self.compatible = False
             if text == '[CAR] JOY ACK':
                 self.stick.ack = time.monotonic()
-            if text in ('[CAR] VERSION car-stage1-v5', '[CAR] VERSION ' + VERSION, '[CAR] VERSION car-stage1-v7', '[CAR] VERSION car-stage1-v8', '[CAR] VERSION car-stage1-v9', '[CAR] VERSION car-stage1-v10', '[CAR] VERSION car-stage1-v11'):
-                self.analog = text.endswith((VERSION, "car-stage1-v7", "car-stage1-v8", "car-stage1-v9", "car-stage1-v10", "car-stage1-v11"))
+            if text in ('[CAR] VERSION car-stage1-v5', '[CAR] VERSION ' + VERSION, '[CAR] VERSION car-stage1-v7', '[CAR] VERSION car-stage1-v8', '[CAR] VERSION car-stage1-v9', '[CAR] VERSION car-stage1-v10', '[CAR] VERSION car-stage1-v11', '[CAR] VERSION car-stage1-v12'):
+                self.analog = text.endswith((VERSION, "car-stage1-v7", "car-stage1-v8", "car-stage1-v9", "car-stage1-v10", "car-stage1-v11", "car-stage1-v12"))
                 self.compatible = True
                 self.status.set('固件已确认：' + text.split()[-1])
             if text in ('[CAR] STOP', '[CAR] STOP error=0'):

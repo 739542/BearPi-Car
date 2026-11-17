@@ -93,7 +93,7 @@ function setMode(next){
  if(held.gas!==null||held.steer!==null||session||arming||stops||rec){note('松开双手并结束录制后可换档');return}
  sport=next;document.body.classList.toggle('sport',sport);
  for(const [id,on] of [['normal',!sport],['sport',sport]])el(id).setAttribute('aria-pressed',String(on));
- note(sport?'急速 · 上限 90%':'普通 · 上限 60%');paint()
+ note(sport?'急速 · 上限 100%':'普通 · 上限 60%');paint()
 }
 el('normal').onclick=()=>setMode(false);el('sport').onclick=()=>setMode(true);
 function reverseFrames(frames){

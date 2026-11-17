@@ -14,7 +14,7 @@
 | 调整车轮输出、超时停车或无线控制协议 | [电机控制](firmware/motor_test.c) · [热点与 HTTP 服务](firmware/wireless.c) |
 | 修改手机驾驶台 | [网页源码](web/) · [板端通信适配](web/board_transport.js) |
 | 使用电脑控制台或查看早期手机中转实现 | [桌面端](desktop/) · [早期 USB 网桥](legacy/bridge.py) |
-| 核对实际烧录版本和启动记录 | [v11 验证材料](verification/) |
+| 核对实际烧录版本和启动记录 | [v12 验证材料](verification/) |
 
 ## 使用已烧录的小车
 
@@ -41,10 +41,10 @@ python3 firmware/build_car.py /实际路径/bearpi-hm_nano
 
 每次修改 web 目录后重新执行后两步。嵌入脚本为板端替换通信实现。构建脚本在 SDK 中暂时选择小车示例，退出时恢复原来的 sample/BUILD.gn。输出位于 SDK 的 out/car_stage1，包括 allinone.bin、manifest.json 和 build.log。
 
-用 HiBurn 选择生成的 Hi3861_wifiiot_app_allinone.bin 和开发板串口，进入 Auto burn 等待后短按 RESET。两个分区写入成功后关闭 HiBurn，打开 115200 波特率串口，再短按 RESET。上电停车后查询 AT+CAR=?，应返回 car-stage1-v11，随后可按热点地址访问。板上原固件含在用热点口令，仓库提供可重新构建的源码。使用不同口令构建后，固件哈希会随之改变。
+用 HiBurn 选择生成的 Hi3861_wifiiot_app_allinone.bin 和开发板串口，进入 Auto burn 等待后短按 RESET。两个分区写入成功后关闭 HiBurn，打开 115200 波特率串口，再短按 RESET。上电停车后查询 AT+CAR=?，新版应返回 car-stage1-v12，随后可按热点地址访问。板上原固件含在用热点口令，仓库提供可重新构建的源码。使用不同口令构建后，固件哈希会随之改变。
 
 ## 离线回归与版本证据
 
 在根目录运行 `python desktop/test_controls.py` 可检查键盘、失焦停车和路线状态。手机测试使用 Node.js、Playwright 与 Chromium，运行 `npm install --no-save --package-lock=false playwright`、`npx playwright install chromium`，再运行 `node verification/mobile.cjs`。使用已安装的 Edge 时，可将 BROWSER_EXECUTABLE 环境变量指向其可执行文件。测试拦截网页的网络请求，可在不接小车时运行。
 
-[原机启动摘录](verification/boot-v11.txt)记录固件版本、停车状态和热点。构建清单中的 hardware_test 是打包当时的标记，启动摘录来自随后实际烧录和复位。早期 USB 网桥只接受 v6 版本回报；当前实车请使用热点直连，或使用桌面串口控制台。
+[原机启动摘录](verification/boot-v12.txt)记录固件版本、停车状态和热点。构建清单中的 hardware_test 是打包当时的标记，启动摘录来自随后实际烧录和复位。早期 USB 网桥只接受 v6 版本回报；当前实车请使用热点直连，或使用桌面串口控制台。

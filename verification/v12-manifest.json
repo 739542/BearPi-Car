@@ -1,0 +1,6 @@
+{
+  "program": "car-stage1-v12",
+  "sha256": "eebe179a98dc400234c8c3d18f9277e1ff1e9d40d916b4c0c438be351ccae967",
+  "source_sha256": "aa9aed6455df9c544182fb1be1e8e033f9ea3bdbd4b92debff91b6a101c19363",
+  "hardware_test": "NOT_RUN"
+}

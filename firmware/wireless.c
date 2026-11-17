@@ -42,7 +42,7 @@ static void control(int fd,const char *cmd)
         owner=0; CarWifiStop();
     }
     if(!strcmp(cmd,"status")) {
-        snprintf(result,sizeof(result),"{\"version\":\"v11\",\"busy\":%s}",owner?"true":"false");
+        snprintf(result,sizeof(result),"{\"version\":\"v12\",\"busy\":%s}",owner?"true":"false");
     } else if(!strcmp(cmd,"stop")) {
         owner=0; CarWifiStop();
     } else if((!strcmp(cmd,"arm") || !strcmp(cmd,"arm-fast")) && !owner) {

@@ -9,7 +9,7 @@ const {chromium}=require('playwright'),fs=require('fs'),path=require('path');
   const route=new URL(r.request().url()).pathname;
   if(route==='/control'){
    const cmd=r.request().postData();commands.push(cmd);
-   return r.fulfill({json:cmd.startsWith('arm')?{session:'demo'}:{version:'v11'}});
+   return r.fulfill({json:cmd.startsWith('arm')?{session:'demo'}:{version:'v12'}});
   }
   let f=route==='/'?'index.html':route.slice(1),data=fs.readFileSync(path.join(base,f),'utf8');
   if(f==='app.js')data=data.slice(0,data.indexOf('async function api('))+fs.readFileSync(path.join(base,'board_transport.js'),'utf8')+'\n'+data.slice(data.indexOf('function state('));
