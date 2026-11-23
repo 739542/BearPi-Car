@@ -1,0 +1,35 @@
+[
+  {
+    "id": "headphones",
+    "name": "黑色耳机",
+    "keywords": ["耳机", "头戴耳机", "headphones", "black headphones"],
+    "unavailable_reason": "耳机前方有线缆，当前场景还没有确认可通过的路线。",
+    "observations": {
+      "1.jpg": {"image_size": [1706, 1279], "center": [1181.217, 254.500]},
+      "2.jpg": {"image_size": [1706, 1279], "center": [1177.903, 274.791]},
+      "3.jpg": {"image_size": [1706, 1279], "center": [1201.313, 367.958]}
+    }
+  },
+  {
+    "id": "power_strip",
+    "name": "白色插排",
+    "keywords": ["插排", "插线板", "排插", "电源插座", "power strip", "socket"],
+    "unavailable_reason": "插排周围有电源线和插头，当前场景还没有确认可通过的路线。",
+    "observations": {
+      "1.jpg": {"image_size": [1706, 1279], "center": [695.824, 393.095]},
+      "3.jpg": {"image_size": [1706, 1279], "center": [736.829, 456.545]},
+      "4.jpg": {"image_size": [1706, 1279], "center": [775.976, 456.888]}
+    }
+  },
+  {
+    "id": "laptop",
+    "name": "笔记本电脑",
+    "keywords": ["电脑", "笔记本", "laptop", "computer"],
+    "unavailable_reason": "这个标记落在屏幕上。还需要在桌面上选一个可达的停车点。",
+    "observations": {
+      "1.jpg": {"image_size": [1706, 1279], "center": [1625.215, 160.520]},
+      "3.jpg": {"image_size": [1706, 1279], "center": [1610.056, 278.632]},
+      "4.jpg": {"image_size": [1706, 1279], "center": [1688.006, 401.949]}
+    }
+  }
+]

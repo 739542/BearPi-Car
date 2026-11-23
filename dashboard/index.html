@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BearPi 导航台</title>
+  <link rel="stylesheet" href="/dashboard.css">
+  <link rel="stylesheet" href="/vendor/supersplat/index.css">
+  <script src="/dashboard.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="BearPi 导航台首页"><span class="brand-mark" aria-hidden="true"></span>BearPi <span>导航台</span></a>
+    <div class="controls">
+      <span id="connection" class="connection" role="status">连接后端中</span>
+      <span id="mode" class="mode" hidden></span>
+      <button id="stop" class="stop" type="button"><span aria-hidden="true"></span>停车</button>
+    </div>
+  </header>
+  <main class="workspace">
+    <section class="panel scene" aria-labelledby="scene-name">
+      <div class="panel-heading">
+        <div><h1 id="scene-name">场景模型</h1><p id="scene-info" class="muted">正在加载点云</p></div>
+        <div class="view-switch" role="group" aria-label="场景视角">
+          <button id="orbit" type="button" aria-pressed="true" disabled>三维</button>
+          <button id="top" type="button" aria-pressed="false" disabled>俯视</button>
+          <button id="gaussians" type="button" aria-pressed="false" hidden>实景 GS</button>
+        </div>
+      </div>
+      <div class="viewport">
+        <canvas id="cloud" tabindex="0" aria-label="场景点云。方向键旋转，正负键缩放。"></canvas>
+        <div id="gs-viewer" hidden aria-label="可旋转的高斯场景"></div>
+        <div id="gs-overlay" hidden>
+          <svg id="gs-annotations" width="100%" height="100%" aria-hidden="true">
+            <g id="gs-target-outlines"></g>
+            <g id="gs-route-overlay" hidden>
+              <line id="gs-heading"/>
+              <line id="gs-path"/>
+              <circle id="gs-start" r="4"/>
+              <circle id="gs-end" r="6"/>
+              <text id="gs-end-label">计划停车点</text>
+            </g>
+          </svg>
+          <div id="gs-targets" role="group" aria-label="实景中的物品"></div>
+        </div>
+        <p id="gs-status" class="scene-error" role="status" hidden></p>
+        <p id="scene-error" class="scene-error" role="status" hidden></p>
+        <div id="cloud-zoom" class="zoom" role="group" aria-label="场景缩放">
+          <button id="zoom-in" type="button" aria-label="放大" disabled>+</button>
+          <button id="zoom-out" type="button" aria-label="缩小" disabled>−</button>
+          <button id="reset-view" type="button" aria-label="重置视角" title="重置视角" disabled>↺</button>
+        </div>
+      </div>
+      <div class="legend">
+        <span data-route-legend><i class="car-color"></i>拍摄时的小车</span>
+        <span data-route-legend><i class="cup-color"></i>蓝杯</span>
+        <span data-route-legend><i class="path-color"></i>计划路线</span>
+        <span id="recon-legend" hidden>原色点云 · 尺度未标定</span>
+        <span class="view-hint">拖动旋转 · 滚动缩放</span>
+      </div>
+    </section>
+    <aside class="sidebar" aria-label="导航任务">
+      <section class="panel side-panel" aria-labelledby="reconstruction-heading">
+        <h2 id="reconstruction-heading">场景重建</h2>
+        <input id="photo-folder" type="file" accept=".jpg,.jpeg,.png" webkitdirectory multiple hidden>
+        <div class="reconstruction-actions">
+          <button id="pick-photos" class="secondary-button" type="button">选择照片文件夹</button>
+          <button id="reconstruct" class="primary-button" type="button" disabled>重建场景</button>
+        </div>
+        <p id="photo-selection" class="muted reconstruction-info">选择含 2–40 张 JPG 或 PNG 照片的文件夹。</p>
+        <label class="gs-option"><input id="train-gs" type="checkbox" disabled>生成实景 GS</label>
+        <p id="gs-option-note" class="muted" hidden>后端加载 GS 训练工具后可选。</p>
+        <p id="reconstruction-status" class="muted reconstruction-info" role="status" hidden></p>
+        <div id="reconstruction-result" class="reconstruction-actions reconstruction-info" hidden>
+          <button id="view-reconstruction" class="secondary-button" type="button">查看重建点云</button>
+          <a id="download-reconstruction" href="#" download="scene.ply">下载 PLY</a>
+          <a id="download-gs" href="#" download="gaussians.ply" hidden>下载 GS</a>
+        </div>
+        <button id="view-navigation" class="secondary-button reconstruction-info" type="button" hidden>返回导航场景</button>
+      </section>
+      <section class="panel side-panel">
+        <h2>场景目标</h2>
+        <form id="target-search" class="target-search" hidden>
+          <label for="target-keyword">目标关键词</label>
+          <div class="reconstruction-actions">
+            <input id="target-keyword" type="search" placeholder="蓝杯、小摆件" maxlength="48">
+            <button class="secondary-button" type="submit">搜索</button>
+          </div>
+        </form>
+        <p id="target-search-status" class="muted reconstruction-info" role="status" hidden></p>
+        <div id="target-list" class="target-list" role="group" aria-label="场景中的物品"></div>
+        <button id="target" class="target" type="button" aria-pressed="false" disabled>
+          <span class="target-icon" aria-hidden="true"></span><span id="target-name">蓝杯</span><span class="target-action" id="target-action">查看路线 ›</span>
+        </button>
+        <p id="no-scene-target" class="muted" hidden>等待语义分割和目标标注。</p>
+      </section>
+      <section class="panel side-panel">
+        <h2>路线预览</h2>
+        <p id="route-empty" class="muted">选择蓝杯查看转向、距离和计划停车点。</p>
+        <div id="route" hidden>
+          <ol id="route-steps" class="route-steps"></ol>
+          <p id="route-note" class="muted route-note">路线基于拍摄时的位置。小车没有实时定位。</p>
+          <div id="departure" hidden>
+            <label id="confirm-start" class="gs-option" hidden><input id="start-confirmed" type="checkbox"><span id="confirm-start-text">小车已摆回起点并对准车头</span></label>
+            <p id="departure-availability" class="muted reconstruction-info" hidden></p>
+            <button id="depart" class="primary-button" type="button" disabled>出发</button>
+            <p id="depart-status" class="muted reconstruction-info" role="status" hidden></p>
+          </div>
+        </div>
+        <div id="navigation-position" class="reconstruction-info" hidden>
+          <p id="navigation-source" class="muted"></p>
+          <button id="navigation-reset" class="secondary-button" type="button">重置起点</button>
+          <p id="navigation-message" class="muted reconstruction-info" role="status" hidden></p>
+        </div>
+      </section>
+      <section class="panel side-panel activity">
+        <h2>指令与执行</h2>
+        <p id="voice-config" class="muted">正在读取语音配置</p>
+        <dl>
+          <div><dt>最近指令</dt><dd id="command">—</dd></div>
+          <div><dt>执行状态</dt><dd id="execution" role="status">等待后端</dd></div>
+        </dl>
+        <p id="gateway-error" class="error" role="status" hidden></p>
+        <p id="stop-feedback" class="muted" role="status" hidden></p>
+      </section>
+    </aside>
+  </main>
+</body>
+</html>
